@@ -1,5 +1,5 @@
 <?php
-namespace HazeDevelopment\UserBehavior;
+namespace HazeDevelopment;
 
 use Session;
 use Request;

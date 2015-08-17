@@ -1,6 +1,6 @@
 <?php
 
-namespace HazeDevelopment\UserBehavior;
+namespace HazeDevelopment;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +22,5 @@ class UserBehaviorServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(UserBehavior::class);
     }
 }
