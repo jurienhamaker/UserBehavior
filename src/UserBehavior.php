@@ -4,6 +4,7 @@ namespace HazeDevelopment;
 use Session;
 use Request;
 use Route;
+use Log;
 
 class UserBehavior extends Route
 {
@@ -45,6 +46,7 @@ class UserBehavior extends Route
 
     public static function init($bannedlist = array())
     {
+        Log::info('UserBehavior Initiated');
         if(is_null(self::$instance))
         {
             self::$instance = new self();
