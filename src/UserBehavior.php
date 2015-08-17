@@ -39,8 +39,8 @@ class UserBehavior extends Route
         }
 
 
-        $this->defaultBanned = config('userbehavior.banned_routes');
-        $this->baseRouteName = config('userbehavior.base_route');
+        self::$defaultBanned = config('userbehavior.banned_routes');
+        self::$baseRouteName = config('userbehavior.base_route');
     }
 
     public static function init($bannedlist = array())
