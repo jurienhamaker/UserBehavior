@@ -15,7 +15,7 @@
         "psr-0": {
             "HazeDevelopment\\userbehavior": "src/"
         }
-    }
+    },
     "minimum-stability": "dev",
     "require": {}
 }
