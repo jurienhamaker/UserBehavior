@@ -23,14 +23,13 @@ class UserBehavior extends Route
     *
     * @var String
     */
-    private static $baseRouteName = 'getHomeSlash';
-
+    private static $baseRouteName;
 
     /**
     *
     * @var Array
     */
-    private static $defaultBanned = ['ajaxLogin', 'getProvider', 'getCartApi', 'getProductApi', 'getStoreApi', 'postAddCartItem', 'postRemoveCartItem', 'postAddOrderCart', 'getLogin', 'zipcodeSearch'];
+    private static $defaultBanned;
 
     public function __construct()
     {
@@ -38,6 +37,10 @@ class UserBehavior extends Route
         {
             Session::put('user_behavior', array());
         }
+
+
+        $this->defaultBanned = config('userbehavior.banned_routes');
+        $this->baseRouteName = config('userbehavior.base_route');
     }
 
     public static function init($bannedlist = array())
@@ -122,7 +125,9 @@ class UserBehavior extends Route
     {
         $user_behavior = Session::pull('user_behavior');
 
-        $user_behavior = array_slice($user_behavior, -10);
+        $user_behavior = array_slice($user_behavior, 
+                                    -(config('userbehavior.max_tracking'))
+                                    );
 
         $currentRoute = (Array)Route::getCurrentRoute(); //hack it.
         if(count($currentRoute) > 0)
@@ -131,7 +136,7 @@ class UserBehavior extends Route
             $action = $currentRoute["\x00*\x00" . 'action'];
             $parameters = $currentRoute["\x00*\x00" . 'parameters'];
             
-            if(isset($action) && !in_array($action['as'], self::$banned) && $method == "GET" || $forced == true)
+            if(isset($action) && !in_array($action['as'], self::$banned) || $forced == true)
             {
                 $lastBehavior = self::getLastBehavior($user_behavior);
                 if($lastBehavior['route'] != $action['as'])

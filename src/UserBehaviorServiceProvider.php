@@ -13,6 +13,9 @@ class UserBehaviorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->publishes([
+            __DIR__.'/config/userbehavior.php' => config_path('userbehavior.php')
+        ], 'config');
     }
 
     /**
