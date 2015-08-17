@@ -12,8 +12,8 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "HazeDevelopment\\userbehavior": "src/"
+        "psr-4": {
+            "HazeDevelopment\\": "src/"
         }
     },
     "minimum-stability": "dev",
