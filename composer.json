@@ -2,12 +2,20 @@
     "name": "hazedevelopment/userbehavior",
     "description": "A package to track the user behavior.",
     "license": "MIT",
+    "homepage":     "http://HazeDevelopment.com/",
+    "version":      "1.0.0",
+    "type":         "library",
     "authors": [
         {
             "name": "Jurien Hamaker",
             "email": "Jurienhamaker@Hotmail.com"
         }
     ],
+    "autoload": {
+        "psr-0": {
+            "HazeDevelopment\\userbehavior": "src/"
+        }
+    }
     "minimum-stability": "dev",
     "require": {}
 }
