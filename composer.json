@@ -1,0 +1,13 @@
+{
+    "name": "hazedevelopment/userbehavior",
+    "description": "A package to track the user behavior.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jurien Hamaker",
+            "email": "Jurienhamaker@Hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
