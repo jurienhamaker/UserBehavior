@@ -138,12 +138,13 @@ class UserBehavior extends Route
             $action = $currentRoute["\x00*\x00" . 'action'];
             $parameters = $currentRoute["\x00*\x00" . 'parameters'];
             
+            $action['as'] = (isset($action['as']) ? $action['as'] : 'none');
             if(isset($action) && !in_array($action['as'], self::$banned) || $forced == true)
             {
                 $lastBehavior = self::getLastBehavior($user_behavior);
                 if($lastBehavior['route'] != $action['as'])
                 {
-                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method);
+                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'url' => Request::url());
                 }
             }
 
