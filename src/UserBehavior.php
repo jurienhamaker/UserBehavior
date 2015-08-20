@@ -5,6 +5,7 @@ use Session;
 use Request;
 use Route;
 use Log;
+use Auth;
 
 class UserBehavior extends Route
 {
@@ -112,7 +113,7 @@ class UserBehavior extends Route
 
             $route = $user_behavior[$number];
 
-            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET')
+            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET' || !Auth::check() && $route['middleware'] == 'auth')
             {
                 return self::getValidRoute($count+1);
             }
@@ -132,6 +133,7 @@ class UserBehavior extends Route
                                     );
 
         $currentRoute = (Array)Route::getCurrentRoute(); //hack it.
+
         if(count($currentRoute) > 0)
         {
             $method = $currentRoute["\x00*\x00" . 'methods'][0];
@@ -139,12 +141,14 @@ class UserBehavior extends Route
             $parameters = $currentRoute["\x00*\x00" . 'parameters'];
             
             $action['as'] = (isset($action['as']) ? $action['as'] : 'none');
+            $middleware = (isset($action['middleware']) ? $action['middleware'] : false);
+
             if(isset($action) && !in_array($action['as'], self::$banned) || $forced == true)
             {
                 $lastBehavior = self::getLastBehavior($user_behavior);
                 if($lastBehavior['route'] != $action['as'])
                 {
-                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'url' => Request::url());
+                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'url' => Request::url(), 'middleware' => $middleware);
                 }
             }
 
