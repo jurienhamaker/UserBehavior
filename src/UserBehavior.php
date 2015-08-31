@@ -33,6 +33,12 @@ class UserBehavior extends Route
     */
     private static $defaultBanned;
 
+    /**
+    *
+    * @var Array
+    */
+    private static $untracked;
+
     public function __construct()
     {
         if(!Session::has('user_behavior'))
@@ -43,6 +49,7 @@ class UserBehavior extends Route
 
         self::$defaultBanned = config('userbehavior.banned_routes');
         self::$baseRouteName = config('userbehavior.base_route');
+        self::$untracked = array_merge(['userbehavior/*'], config('userbehavior.untracked'));
     }
 
     public static function init($bannedlist = array())
@@ -58,9 +65,14 @@ class UserBehavior extends Route
         return self::$instance;
     }
 
-    public static function getBehavior()
+    public static function all()
     {
         return Session::get("user_behavior");
+    }
+
+    public static function getUntracked()
+    {
+        return self::$untracked;
     }
 
     public static function getLastUrl()
@@ -143,7 +155,16 @@ class UserBehavior extends Route
             $action['as'] = (isset($action['as']) ? $action['as'] : 'none');
             $middleware = (isset($action['middleware']) ? $action['middleware'] : false);
 
-            if(isset($action) && !in_array($action['as'], self::$banned) || $forced == true)
+            $untracked = false;
+            foreach(self::$untracked as $untrack)
+            {
+                if(fnmatch($untrack, Request::url()))
+                {
+                    $untracked = true;
+                }
+            }
+            
+            if(isset($action) && !in_array($action['as'], self::$banned) && !$untracked || $forced == true)
             {
                 $lastBehavior = self::getLastBehavior($user_behavior);
                 if($lastBehavior['route'] != $action['as'])

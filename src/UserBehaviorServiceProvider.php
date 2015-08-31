@@ -17,6 +17,7 @@ class UserBehaviorServiceProvider extends ServiceProvider
             __DIR__.'/config/userbehavior.php' => config_path('userbehavior.php')
         ], 'config');
 
+        require __DIR__.'/routes.php';
         UserBehavior::init();
     }
 
