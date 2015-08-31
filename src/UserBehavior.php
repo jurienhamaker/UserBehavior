@@ -49,7 +49,11 @@ class UserBehavior extends Route
 
         self::$defaultBanned = config('userbehavior.banned_routes');
         self::$baseRouteName = config('userbehavior.base_route');
+<<<<<<< HEAD
         self::$untracked = array_merge(['userbehavior/*'], config('userbehavior.untracked'));
+=======
+        self::$untracked = config('userbehavior.untracked');
+>>>>>>> ce406138331b6af21ca5433c28436181bc78ec48
     }
 
     public static function init($bannedlist = array())
@@ -120,7 +124,7 @@ class UserBehavior extends Route
 
             $route = $user_behavior[$number];
 
-            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET' || !Auth::check() && $route['middleware'] == 'auth')
+            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET' || !Auth::check() && in_array('auth', $route['middleware']))
             {
                 return self::getValidRoute($count+1);
             }
