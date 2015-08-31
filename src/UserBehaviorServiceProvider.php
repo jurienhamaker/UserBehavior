@@ -22,7 +22,6 @@ class UserBehaviorServiceProvider extends ServiceProvider
         ], 'migrations');
 
         require __DIR__ .'/routes.php';
-
         UserBehavior::init();
     }
 
