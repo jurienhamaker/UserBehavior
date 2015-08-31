@@ -153,12 +153,13 @@ class UserBehavior extends Route
             $parameters = $currentRoute["\x00*\x00" . 'parameters'];
             
             $action['as'] = (isset($action['as']) ? $action['as'] : 'none');
+            $action['prefix'] = (isset($action['prefix']) ? $action['prefix'] : 'none');
             $middleware = (isset($action['middleware']) ? $action['middleware'] : false);
 
             $untracked = false;
             foreach(self::$untracked as $untrack)
             {
-                if(fnmatch($untrack, Request::url()))
+                if(fnmatch($untrack, Request::path()))
                 {
                     $untracked = true;
                 }
@@ -169,7 +170,7 @@ class UserBehavior extends Route
                 $lastBehavior = self::getLastBehavior($user_behavior);
                 if($lastBehavior['route'] != $action['as'])
                 {
-                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'url' => Request::url(), 'middleware' => $middleware);
+                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'full_url' => Request::url(), 'url' => Request::path(), 'middleware' => $middleware, 'prefix' => $action['prefix']);
                 }
             }
 

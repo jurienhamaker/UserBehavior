@@ -17,10 +17,6 @@ class UserBehaviorServiceProvider extends ServiceProvider
             __DIR__.'/config/userbehavior.php' => config_path('userbehavior.php')
         ], 'config');
 
-        $this->publishes([
-            __DIR__.'/../database/migrations/' => database_path('migrations')
-        ], 'migrations');
-
         require __DIR__ .'/routes.php';
         UserBehavior::init();
     }
