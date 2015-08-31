@@ -126,7 +126,7 @@ class UserBehavior extends Route
 
             $route = $user_behavior[$number];
 
-            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET')
+            if(in_array($route['route'], (is_array(self::$banned) ? self::$banned : [])) || $route['method'] != 'GET')
             {
                 return self::getValidRoute($count+1);
             }
