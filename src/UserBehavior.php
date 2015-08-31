@@ -176,7 +176,7 @@ class UserBehavior extends Route
                                             'method' => $method, 
                                             'full_url' => Request::url(), 
                                             'url' => Request::path(), 
-                                            'middleware' => (is_array($$middleware) ? $middleware : [$middleware]), 
+                                            'middleware' => (is_array($middleware) ? $middleware : [$middleware]), 
                                             'prefix' => $action['prefix'],
                                             'input' => Input::except('_token'));
                 }
