@@ -17,7 +17,6 @@ Route::group(array('prefix' => 'userbehavior'), function()
     Route::get('/last/url', function(){
         return json_encode(HazeDevelopment\UserBehavior::getLastUrl());
     });
-
     Route::get('/untracked', function(){
         return json_encode(HazeDevelopment\UserBehavior::getUntracked());
     });
