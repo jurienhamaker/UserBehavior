@@ -2,11 +2,11 @@
 
 return [
 
-    'max_tracking' => 10,
+    'max_tracking' => 25,
 
     'base_route' => 'getHomeSlash',
 
-    //'banned_routes' => ['ajaxLogin', 'getProvider', 'getCartApi', 'getProductApi', 'getStoreApi', 'postAddCartItem', 'postRemoveCartItem', 'postAddOrderCart', 'getLogin', 'zipcodeSearch'],
     'banned_routes' => [],
 
+    'untracked' => ['api/*'],
 ];

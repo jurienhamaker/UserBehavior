@@ -6,6 +6,7 @@ use Request;
 use Route;
 use Log;
 use Auth;
+use Input;
 
 class UserBehavior extends Route
 {
@@ -29,6 +30,12 @@ class UserBehavior extends Route
 
     /**
     *
+    * @var String
+    */
+    private static $untracked;
+
+    /**
+    *
     * @var Array
     */
     private static $defaultBanned;
@@ -43,6 +50,7 @@ class UserBehavior extends Route
 
         self::$defaultBanned = config('userbehavior.banned_routes');
         self::$baseRouteName = config('userbehavior.base_route');
+        self::$untracked = config('userbehavior.untracked');
     }
 
     public static function init($bannedlist = array())
@@ -58,7 +66,7 @@ class UserBehavior extends Route
         return self::$instance;
     }
 
-    public static function getBehavior()
+    public static function all()
     {
         return Session::get("user_behavior");
     }
@@ -126,6 +134,7 @@ class UserBehavior extends Route
 
     public static function saveRoute($forced = false)
     {
+
         $user_behavior = Session::pull('user_behavior');
 
         $user_behavior = array_slice($user_behavior, 
@@ -143,12 +152,29 @@ class UserBehavior extends Route
             $action['as'] = (isset($action['as']) ? $action['as'] : 'none');
             $middleware = (isset($action['middleware']) ? $action['middleware'] : false);
 
-            if(isset($action) && !in_array($action['as'], self::$banned) || $forced == true)
+            $untracked = false;
+
+            if(isset($action) || $forced == true)
             {
-                $lastBehavior = self::getLastBehavior($user_behavior);
-                if($lastBehavior['route'] != $action['as'])
+                foreach(self::$untracked as $untrack)
                 {
-                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'url' => Request::url(), 'middleware' => $middleware);
+                    if (fnmatch($untrack, $action['as'])) {
+                        $untracked = true;
+                    }
+                }
+
+                $lastBehavior = self::getLastBehavior($user_behavior);
+                if($lastBehavior['route'] != $action['as'] && !$untracked)
+                {
+                    $user_behavior[] = array('route' => $action['as'], 
+                                            'parameters' => $parameters, 
+                                            'method' => $method, 
+                                            'full_url' => Request::url(), 
+                                            'url' => Request::path(), 
+                                            'middleware' => $middleware, 
+                                            'input' => Input::except('_token'),
+                                            'prefix' => $action['prefix']
+                                            );
                 }
             }
 
