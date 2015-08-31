@@ -126,7 +126,7 @@ class UserBehavior extends Route
 
             $route = $user_behavior[$number];
 
-            if(in_array($route['route'], (is_array(self::$banned) ? self::$banned : [])) || $route['method'] != 'GET')
+            if(in_array($route['route'], (is_array(self::$banned) ? self::$banned : [])) || $route['method'] != 'GET' || !Auth::check() && in_array('auth', (is_array($route['middleware']) ? $route['middleware'] : [])))
             {
                 return self::getValidRoute($count+1);
             }
@@ -176,7 +176,7 @@ class UserBehavior extends Route
                                             'method' => $method, 
                                             'full_url' => Request::url(), 
                                             'url' => Request::path(), 
-                                            'middleware' => $middleware, 
+                                            'middleware' => (is_array($$middleware) ? $middleware : [$middleware]), 
                                             'prefix' => $action['prefix'],
                                             'input' => Input::except('_token'));
                 }
