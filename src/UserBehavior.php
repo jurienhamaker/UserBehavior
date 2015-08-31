@@ -6,6 +6,7 @@ use Request;
 use Route;
 use Log;
 use Auth;
+use Input;
 
 class UserBehavior extends Route
 {
@@ -47,9 +48,9 @@ class UserBehavior extends Route
         }
 
 
-        self::$defaultBanned = config('userbehavior.banned_routes');
-        self::$baseRouteName = config('userbehavior.base_route');
-        self::$untracked = array_merge(['userbehavior/*'], config('userbehavior.untracked'));
+        self::$defaultBanned = (config('userbehavior.banned_routes') ? config('userbehavior.banned_routes') : []);
+        self::$baseRouteName = (config('userbehavior.base_route') ? config('userbehavior.base_route') : []);
+        self::$untracked = array_merge(['userbehavior/*'], (config('userbehavior.untracked') ? config('userbehavior.untracked') : []));
     }
 
     public static function init($bannedlist = array())
@@ -125,7 +126,7 @@ class UserBehavior extends Route
 
             $route = $user_behavior[$number];
 
-            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET' || !Auth::check() && in_array('auth', $route['middleware']))
+            if(in_array($route['route'], self::$banned) || $route['method'] != 'GET')
             {
                 return self::getValidRoute($count+1);
             }
@@ -170,7 +171,14 @@ class UserBehavior extends Route
                 $lastBehavior = self::getLastBehavior($user_behavior);
                 if($lastBehavior['route'] != $action['as'])
                 {
-                    $user_behavior[] = array('route' => $action['as'], 'parameters' => $parameters, 'method' => $method, 'full_url' => Request::url(), 'url' => Request::path(), 'middleware' => $middleware, 'prefix' => $action['prefix']);
+                    $user_behavior[] = array('route' => $action['as'],
+                                            'parameters' => $parameters, 
+                                            'method' => $method, 
+                                            'full_url' => Request::url(), 
+                                            'url' => Request::path(), 
+                                            'middleware' => $middleware, 
+                                            'prefix' => $action['prefix'],
+                                            'input' => Input::except('_token'));
                 }
             }
 
