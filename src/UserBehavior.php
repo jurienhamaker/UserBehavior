@@ -1,62 +1,55 @@
 <?php
+
 namespace HazeDevelopment;
 
-use Session;
-use Request;
-use Route;
-use Log;
 use Auth;
 use Input;
+use Log;
+use Request;
+use Route;
+use Session;
 
 class UserBehavior extends Route
 {
     /**
-   * 
-   * @var Singleton
-   */
+     * @var Singleton
+     */
     private static $instance;
 
     /**
-    *
-    * @var Array
-    */
+     * @var Array
+     */
     private static $banned;
 
     /**
-    *
-    * @var String
-    */
+     * @var String
+     */
     private static $baseRouteName;
 
     /**
-    *
-    * @var Array
-    */
+     * @var Array
+     */
     private static $defaultBanned;
 
     /**
-    *
-    * @var Array
-    */
+     * @var Array
+     */
     private static $untracked;
 
     public function __construct()
     {
-        if(!Session::has('user_behavior'))
-        {
-            Session::put('user_behavior', array());
+        if (!Session::has('user_behavior')) {
+            Session::put('user_behavior', []);
         }
-
 
         self::$defaultBanned = (config('userbehavior.banned_routes') ? config('userbehavior.banned_routes') : []);
         self::$baseRouteName = (config('userbehavior.base_route') ? config('userbehavior.base_route') : []);
         self::$untracked = array_merge(['userbehavior/*'], (config('userbehavior.untracked') ? config('userbehavior.untracked') : []));
     }
 
-    public static function init($bannedlist = array())
+    public static function init($bannedlist = [])
     {
-        if(is_null(self::$instance))
-        {
+        if (is_null(self::$instance)) {
             self::$instance = new self();
         }
 
@@ -67,7 +60,7 @@ class UserBehavior extends Route
 
     public static function all()
     {
-        return Session::get("user_behavior");
+        return Session::get('user_behavior');
     }
 
     public static function getUntracked()
@@ -77,12 +70,12 @@ class UserBehavior extends Route
 
     public static function getLastUrl()
     {
-        $user_behavior = Session::get("user_behavior");
+        $user_behavior = Session::get('user_behavior');
         $amount = count($user_behavior);
 
-        if($amount > 0)
-        {
-            $last = $user_behavior[$amount-1];
+        if ($amount > 0) {
+            $last = $user_behavior[$amount - 1];
+
             return route($last['route'], $last['parameters']);
         }
 
@@ -91,16 +84,15 @@ class UserBehavior extends Route
 
     public static function getLastBehavior($user_behavior = false)
     {
-        if(!$user_behavior)
-        {
-            $user_behavior = Session::get("user_behavior");    
+        if (!$user_behavior) {
+            $user_behavior = Session::get('user_behavior');
         }
-        
+
         $amount = count($user_behavior);
 
-        if($amount > 0)
-        {
-            $last = $user_behavior[$amount-1];
+        if ($amount > 0) {
+            $last = $user_behavior[$amount - 1];
+
             return $last;
         }
 
@@ -109,75 +101,65 @@ class UserBehavior extends Route
 
     public static function getValidRoute($count = 1)
     {
-        $user_behavior = Session::get("user_behavior");
+        $user_behavior = Session::get('user_behavior');
         $amount = count($user_behavior);
 
-        if($amount > 0 && $count <= 10)
-        {
-            if($count <= $amount)
-            {
-                $number = $amount-$count;
-            }
-            else
-            {
+        if ($amount > 0 && $count <= 10) {
+            if ($count <= $amount) {
+                $number = $amount - $count;
+            } else {
                 $number = 0;
             }
 
             $route = $user_behavior[$number];
 
-            if(in_array($route['route'], (is_array(self::$banned) ? self::$banned : [])) || $route['method'] != 'GET' || !Auth::check() && in_array('auth', (is_array($route['middleware']) ? $route['middleware'] : [])))
-            {
-                return self::getValidRoute($count+1);
+            if (in_array($route['route'], (is_array(self::$banned) ? self::$banned : [])) || $route['method'] != 'GET' || !Auth::check() && in_array('auth', (is_array($route['middleware']) ? $route['middleware'] : []))) {
+                return self::getValidRoute($count + 1);
             }
 
-            return array('route' => $route['route'], 'parameters' => $route['parameters']);
+            return ['route' => $route['route'], 'parameters' => $route['parameters']];
         }
 
-        return array('route' => self::$baseRouteName, 'parameters' => []);
+        return ['route' => self::$baseRouteName, 'parameters' => []];
     }
 
     public static function saveRoute($forced = false)
     {
         $user_behavior = Session::pull('user_behavior');
 
-        $user_behavior = array_slice($user_behavior, 
+        $user_behavior = array_slice($user_behavior,
                                     -(config('userbehavior.max_tracking'))
                                     );
 
-        $currentRoute = (Array)Route::getCurrentRoute(); //hack it.
+        $currentRoute = (Array) Route::getCurrentRoute(); //hack it.
 
-        if(count($currentRoute) > 0)
-        {
-            $method = $currentRoute["\x00*\x00" . 'methods'][0];
-            $action = $currentRoute["\x00*\x00" . 'action'];
-            $parameters = $currentRoute["\x00*\x00" . 'parameters'];
-            
+        if (count($currentRoute) > 0) {
+            $method = $currentRoute["\x00*\x00".'methods'][0];
+            $action = $currentRoute["\x00*\x00".'action'];
+            $parameters = $currentRoute["\x00*\x00".'parameters'];
+
             $action['as'] = (isset($action['as']) ? $action['as'] : 'none');
             $action['prefix'] = (isset($action['prefix']) ? $action['prefix'] : 'none');
             $middleware = (isset($action['middleware']) ? $action['middleware'] : false);
 
             $untracked = false;
-            foreach(self::$untracked as $untrack)
-            {
-                if(fnmatch($untrack, Request::path()))
-                {
+            foreach (self::$untracked as $untrack) {
+                if (fnmatch($untrack, Request::path())) {
                     $untracked = true;
                 }
             }
-            
-            if(isset($action) && !in_array($action['as'], self::$banned) && !$untracked || $forced == true)
-            {
+
+            if (isset($action) && !in_array($action['as'], self::$banned) && !$untracked || $forced == true) {
                 $lastBehavior = self::getLastBehavior($user_behavior);
-                if($lastBehavior['route'] != $action['as'])
-                {
-                    $user_behavior[] = array('route' => $action['as'],
-                                            'parameters' => $parameters, 
-                                            'method' => $method, 
-                                            'full_url' => Request::url(), 
-                                            'url' => Request::path(), 
-                                            'middleware' => (is_array($middleware) ? $middleware : [$middleware]), 
-                                            'prefix' => $action['prefix'],
-                                            'input' => Input::except('_token'));
+                if ($lastBehavior['route'] != $action['as']) {
+                    $user_behavior[] = ['route'          => $action['as'],
+                                            'parameters' => $parameters,
+                                            'method'     => $method,
+                                            'full_url'   => Request::url(),
+                                            'url'        => Request::path(),
+                                            'middleware' => (is_array($middleware) ? $middleware : [$middleware]),
+                                            'prefix'     => $action['prefix'],
+                                            'input'      => Input::except('_token'), ];
                 }
             }
 
