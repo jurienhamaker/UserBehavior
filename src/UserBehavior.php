@@ -55,7 +55,6 @@ class UserBehavior extends Route
 
     public static function init($bannedlist = array())
     {
-        Log::info('UserBehavior Initiated');
         if(is_null(self::$instance))
         {
             self::$instance = new self();
