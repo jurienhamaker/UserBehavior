@@ -4,7 +4,6 @@ namespace HazeDevelopment;
 
 use Auth;
 use Input;
-use Log;
 use Request;
 use Route;
 use Session;
@@ -17,22 +16,22 @@ class UserBehavior extends Route
     private static $instance;
 
     /**
-     * @var Array
+     * @var array
      */
     private static $banned;
 
     /**
-     * @var String
+     * @var string
      */
     private static $baseRouteName;
 
     /**
-     * @var Array
+     * @var array
      */
     private static $defaultBanned;
 
     /**
-     * @var Array
+     * @var array
      */
     private static $untracked;
 
